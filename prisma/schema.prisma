@@ -1,6 +1,7 @@
+import { PrismaClient } from '@prisma/client';
+
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
