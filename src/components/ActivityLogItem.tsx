@@ -4,18 +4,25 @@ interface ActivityLogItemProps {
   note: string;
 }
 
-export default function ActivityLogItem({ habitName, date, note }: ActivityLogItemProps) {
+const ActivityLogItem = ({ habitName, date, note }: ActivityLogItemProps) => {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
   return (
-    <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100 hover:shadow-lg transition-shadow duration-200">
-      <div className="flex items-start justify-between mb-2">
-        <h3 className="font-semibold text-gray-800 text-sm">{habitName}</h3>
-        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-          {date}
-        </span>
+    <div className="border-l-4 border-green-400 bg-green-50 p-4 rounded-r-lg">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="font-semibold text-green-800">{habitName}</h3>
+        <span className="text-sm text-green-600">{formatDate(date)}</span>
       </div>
-      {note && (
-        <p className="text-gray-600 text-sm leading-relaxed">{note}</p>
-      )}
+      <p className="text-green-700 text-sm">{note}</p>
     </div>
   );
-}
+};
+
+export default ActivityLogItem;

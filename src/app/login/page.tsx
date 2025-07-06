@@ -37,6 +37,11 @@ export default function Login() {
       });
 
       if (response.ok) {
+        const userData = await response.json();
+        // Store user ID in localStorage
+        localStorage.setItem('userId', userData.id || userData.user?.id);
+        localStorage.setItem('user', JSON.stringify(userData.user || userData));
+        
         // Redirect to dashboard on success
         router.push('/dashboard');
       } else {
