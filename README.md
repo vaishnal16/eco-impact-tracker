@@ -1,36 +1,139 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌱 Eco Impact Tracker
 
-## Getting Started
+A modern web application that helps users track and reduce their environmental impact through daily activities, learning resources, and gamification.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### 1. Carbon Footprint Tracking
+- Personal carbon footprint calculator
+- Daily activity logging
+- Real-time impact visualization
+- Progress tracking over time
+
+### 2. Analytics Dashboard
+- Comprehensive environmental impact metrics
+- Interactive charts and visualizations
+- Progress trends and patterns
+- Personalized insights and recommendations
+
+### 3. Achievement System
+- Earn eco-badges for sustainable actions
+- Track progress through different achievement levels
+- Unlock special rewards and recognition
+- Visual badge showcase
+
+### 4. Learning Hub
+- Educational resources on sustainability
+- Tips for eco-friendly living
+- Categorized learning materials
+- Progress tracking for completed lessons
+
+### 5. Interactive Eco Quiz
+- AI-powered environmental knowledge quizzes
+- Learn while having fun
+- Track quiz scores and improvements
+- Regular new questions and challenges
+
+### 6. Activity Logging
+- Easy-to-use activity input interface
+- Track multiple eco-friendly habits
+- Points system for activities
+- Daily streaks and achievements
+
+### 7. Leaderboard System
+- Compete with other eco-warriors
+- Global and local rankings
+- Point-based competition
+- Monthly/weekly challenges
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **Framework**: Next.js 13+ (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+
+### Backend
+- **Runtime**: Node.js
+- **API**: Next.js API Routes
+- **Database**: Mysql with Prisma ORM
+- **Authentication**: JWT (JSON Web Tokens)
+
+
+## 📦 Project Structure
+
+```
+eco-impact-tracker/
+├── src/
+│   ├── app/                 # Next.js 13 app directory
+│   │   ├── analytics/      # Analytics page
+│   │   ├── badges/        # Badges showcase
+│   │   ├── dashboard/     # User dashboard
+│   │   ├── ecoquiz/      # Interactive quiz
+│   │   ├── footprint/    # Carbon footprint calculator
+│   │   ├── learn/        # Learning resources
+│   │   ├── log/          # Activity logging
+│   │   └── page.tsx      # Home page
+│   ├── components/        # Reusable components
+│   ├── hooks/            # Custom React hooks
+│   ├── lib/              # Utility functions
+│   └── pages/            # API routes
+├── prisma/               # Database schema and migrations
+├── public/              # Static assets
+└── package.json         # Project dependencies
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Getting Started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/eco-impact-tracker.git
+   cd eco-impact-tracker
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-## Learn More
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local with your configuration
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. **Set up the database**
+   ```bash
+   npx prisma migrate dev
+   npx prisma generate
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. **Run the development server**
+   ```bash
+   npm run dev
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+6. **Open the application**
+   ```
+   Visit http://localhost:3000
+   ```
 
-## Deploy on Vercel
+## 🔒 Environment Variables
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Create a `.env.local` file with the following variables:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```env
+DATABASE_URL="mysql://user:password@localhost:5432/eco_impact_db"
+JWT_SECRET="your-jwt-secret"
+NEXT_PUBLIC_API_URL="http://localhost:3000/api"
+```
+
+
+## 📧 Contact
+
+For any suggestions, please reach out to:
+- Email: your.email@example.com
+- GitHub: [Your GitHub Profile](https://github.com/vaishnal16)
+
+---
+Made with 💚 for a greener planet
