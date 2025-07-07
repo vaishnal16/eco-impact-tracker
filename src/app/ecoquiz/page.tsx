@@ -119,7 +119,7 @@ export default function EcoQuizPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-green-100 to-emerald-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
@@ -130,106 +130,93 @@ export default function EcoQuizPage() {
             Test your environmental knowledge with our AI-generated questions!
           </p>
           <div className="mt-4 flex items-center justify-center space-x-4 text-lg">
-            <span className="font-medium text-green-600">Score: {score}</span>
-            <span className="text-gray-400">|</span>
-            <span className="font-medium text-green-600">Question: {currentQuestionNumber}</span>
+            <span className="font-medium text-green-600" role="status" aria-label="Current Score">Score: {score}</span>
+            <span className="text-gray-400" aria-hidden="true">|</span>
+            <span className="font-medium text-green-600" role="status" aria-label="Current Question Number">Question: {currentQuestionNumber}</span>
           </div>
         </div>
 
         {/* Quiz Card */}
-        <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+        <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-green-100 transform hover:scale-[1.02] transition-all duration-300">
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-              <p className="mt-4 text-gray-600">Generating your question...</p>
+            <div className="animate-pulse space-y-4">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
+              <div className="space-y-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="h-12 bg-gray-100 rounded-xl"></div>
+                ))}
+              </div>
             </div>
-          ) : question ? (
-            <div className="space-y-6">
-              {/* Question */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-medium text-gray-800">
+          ) : (
+            question && (
+              <div>
+                <h2 className="text-xl font-medium text-gray-800 mb-6" role="heading" aria-level={2}>
                   {question.question}
-                </h3>
-                
-                {/* Options */}
-                <div className="grid gap-4">
+                </h2>
+                <div className="space-y-3">
                   {question.options.map((option, index) => (
                     <button
                       key={index}
                       onClick={() => handleAnswerSelect(index)}
                       disabled={showResult}
+                      aria-pressed={selectedAnswer === index}
                       className={`
-                        p-4 rounded-lg text-left transition-all duration-200
-                        ${selectedAnswer === index
-                          ? showResult
-                            ? index === question.correctAnswer
-                              ? 'bg-green-100 border-green-500 text-green-800'
-                              : 'bg-red-100 border-red-500 text-red-800'
-                            : 'bg-green-600 text-white'
-                          : 'bg-gray-50 hover:bg-gray-100'
+                        w-full px-6 py-4 rounded-xl text-left transition-all duration-300
+                        ${showResult
+                          ? index === question.correctAnswer
+                            ? 'bg-green-100 text-green-800 border-2 border-green-500'
+                            : index === selectedAnswer
+                            ? 'bg-red-100 text-red-800 border-2 border-red-500'
+                            : 'bg-gray-50 text-gray-800'
+                          : selectedAnswer === index
+                          ? 'bg-green-600 text-white shadow-xl'
+                          : 'bg-gray-50 text-gray-800 hover:bg-gray-100 hover:shadow-lg'
                         }
-                        ${showResult && index === question.correctAnswer
-                          ? 'bg-green-100 border-green-500 text-green-800'
-                          : ''
-                        }
-                        border-2
-                        ${selectedAnswer === index ? 'border-current' : 'border-transparent'}
                       `}
                     >
-                      <div className="flex items-center space-x-3">
-                        <span className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0
-                          ${selectedAnswer === index ? 'border-current' : 'border-gray-300'}`}>
-                          {String.fromCharCode(65 + index)}
-                        </span>
-                        <span>{option}</span>
-                      </div>
+                      {option}
                     </button>
                   ))}
                 </div>
-              </div>
 
-              {/* Actions */}
-              <div className="pt-6">
-                {!showResult ? (
-                  <button
-                    onClick={handleSubmit}
-                    disabled={selectedAnswer === null}
-                    className={`
-                      w-full py-3 px-4 rounded-xl text-white font-medium text-lg
-                      transition-all duration-200 transform hover:scale-[1.02]
-                      ${selectedAnswer !== null
-                        ? 'bg-green-600 hover:bg-green-700 shadow-md hover:shadow-lg'
-                        : 'bg-gray-400 cursor-not-allowed'}
-                    `}
-                  >
-                    Submit Answer
-                  </button>
-                ) : (
-                  <div className="space-y-4">
-                    <div className={`p-4 rounded-lg ${
-                      selectedAnswer === question.correctAnswer
-                        ? 'bg-green-50 text-green-800'
-                        : 'bg-red-50 text-red-800'
-                    }`}>
-                      <p className="font-medium mb-2">
-                        {selectedAnswer === question.correctAnswer
-                          ? '🎉 Correct!'
-                          : '❌ Incorrect'}
-                      </p>
-                      <p className="text-gray-600">{question.explanation}</p>
-                    </div>
+                {showResult && (
+                  <div className="mt-6 p-4 rounded-xl bg-gray-50">
+                    <p className="text-gray-800 font-medium mb-2" role="alert">
+                      {selectedAnswer === question.correctAnswer ? '✅ Correct!' : '❌ Incorrect'}
+                    </p>
+                    <p className="text-gray-600">{question.explanation}</p>
+                  </div>
+                )}
+
+                <div className="mt-8 flex justify-center">
+                  {!showResult ? (
+                    <button
+                      onClick={handleSubmit}
+                      disabled={selectedAnswer === null}
+                      aria-label="Submit answer"
+                      className={`
+                        px-8 py-3 rounded-xl font-medium transition-all duration-300
+                        ${selectedAnswer !== null
+                          ? 'bg-green-600 text-white hover:bg-green-700 shadow-xl hover:shadow-2xl transform hover:-translate-y-1'
+                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        }
+                      `}
+                    >
+                      Submit Answer
+                    </button>
+                  ) : (
                     <button
                       onClick={handleNextQuestion}
-                      className="w-full py-3 px-4 rounded-xl bg-green-600 text-white font-medium text-lg
-                        transition-all duration-200 transform hover:scale-[1.02] hover:bg-green-700 shadow-md hover:shadow-lg"
+                      aria-label="Next question"
+                      className="bg-green-600 text-white px-8 py-3 rounded-xl font-medium hover:bg-green-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
                     >
                       Next Question
                     </button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          ) : null}
+            )
+          )}
         </div>
       </div>
     </div>

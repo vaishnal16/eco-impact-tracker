@@ -1,0 +1,6 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="32" cy="32" r="28" fill="#7C3AED" />
+  <path d="M32 16L38 24H46L42 32L46 40H38L32 48L26 40H18L22 32L18 24H26L32 16Z" fill="white" />
+  <circle cx="32" cy="32" r="8" fill="#7C3AED" />
+  <circle cx="32" cy="32" r="4" fill="white" />
+</svg> 

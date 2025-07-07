@@ -66,14 +66,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Add other fields as needed
     }));
 
-    const badges = user.user_badges.map((userBadge: { badge: { id: any; name: any; description: any; icon: any; }; earned_at: any; }) => ({
-      id: userBadge.badge.id,
-      name: userBadge.badge.name,
-      description: userBadge.badge.description,
-      icon: userBadge.badge.icon,
-      earned_at: userBadge.earned_at,
-      // Add other badge fields as needed
-    }));
+    const badges = user.user_badges.map((userBadge: { badge: { id: any; name: any; description: any; icon: any; }; earned_at: any; }) => {
+      // Map badge names to their corresponding SVG files
+      const badgeImageMap: { [key: string]: string } = {
+        'First Steps': '/badges/first-steps.svg',
+        'Eco Warrior': '/badges/eco-warrior.svg',
+        'Green Commuter': '/badges/green-commuter.svg',
+        'Recycling Champion': '/badges/recycling-champion.svg',
+        'Tree Planter': '/badges/tree-planter.svg',
+        'Energy Saver': '/badges/energy-saver.svg',
+        'Water Guardian': '/badges/water-guardian.svg',
+        'Waste Reducer': '/badges/waste-reducer.svg',
+        'Local Hero': '/badges/local-hero.svg',
+        'Sustainability Master': '/badges/sustainability-master.svg',
+        'Climate Champion': '/badges/climate-champion.svg',
+        'Eco Legend': '/badges/eco-legend.svg'
+      };
+
+      return {
+        id: userBadge.badge.id,
+        name: userBadge.badge.name,
+        description: userBadge.badge.description,
+        icon: userBadge.badge.icon,
+        imageUrl: badgeImageMap[userBadge.badge.name] || '/badges/first-steps.svg', // Default to first-steps if no match
+        earned_at: userBadge.earned_at,
+      };
+    });
 
     // Return in EXACT expected format
     res.status(200).json({

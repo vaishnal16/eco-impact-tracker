@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import ActivityLogItem from '../../components/ActivityLogItem';
 import BadgeCard from '../../components/BadgeCard';
 import useSession from '../../hooks/useSession';
+import Link from 'next/link';
 
 interface ActivityLog {
   id: number;
@@ -16,6 +17,8 @@ interface ActivityLog {
 interface Badge {
   id: number;
   name: string;
+  description: string;
+  imageUrl: string;
   icon: string;
   earned_at: string;
 }
@@ -74,10 +77,10 @@ export default function DashboardPage() {
 
   if (loading || !sessionUser) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your dashboard...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-600 mx-auto mb-6"></div>
+          <p className="text-lg text-green-800 font-medium">Loading your eco-dashboard...</p>
         </div>
       </div>
     );
@@ -85,17 +88,18 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg">
-            {error}
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto">
+          <div className="bg-red-50 border-2 border-red-200 text-red-700 px-8 py-6 rounded-2xl shadow-lg">
+            <span className="text-4xl mb-4 block">⚠️</span>
+            <p className="text-lg font-medium mb-4">{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="bg-red-600 text-white px-6 py-3 rounded-xl hover:bg-red-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg font-medium"
+            >
+              Try Again
+            </button>
           </div>
-          <button 
-            onClick={() => window.location.reload()}
-            className="mt-4 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-          >
-            Try Again
-          </button>
         </div>
       </div>
     );
@@ -103,9 +107,10 @@ export default function DashboardPage() {
 
   if (!dashboardData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">No dashboard data available</p>
+          <span className="text-6xl mb-6 block">🌱</span>
+          <p className="text-xl text-green-800 font-medium">No dashboard data available</p>
         </div>
       </div>
     );
@@ -119,67 +124,113 @@ export default function DashboardPage() {
   const avatarInitial = getInitial(name);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-12">
-      {/* Sticky Header */}
-      <header className="sticky top-0 z-20 bg-white/80 backdrop-blur-md shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center font-bold">
-              {avatarInitial}
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 leading-none">Welcome back</p>
-              <h1 className="text-lg font-semibold text-gray-800 leading-none">{name}</h1>
-            </div>
-          </div>
-          <div className="flex items-center space-x-4">
-            {/* Points and streak moved above */}
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 pb-12">
+      {/* Enhanced Header */}
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+            {/* Welcome Message */}
             <div className="flex items-center space-x-4">
-              {/* Total points */}
-              <div className="flex items-center space-x-1">
-                <span className="text-green-700 font-bold">{totalPoints}</span>
-                <span className="text-sm text-gray-600">pts</span>
+              <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                {avatarInitial}
               </div>
-              {/* Daily Streak */}
-              <div
-                className="flex items-center space-x-1 cursor-help"
-                title="Keep logging daily to maintain your streak"
-              >
-                <span className="text-green-700 font-bold">{currentStreak}</span>
-                <span className="text-sm text-gray-600">day streak!</span>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-800">
+                  Welcome back, {name}!
+                </h1>
+                <p className="text-gray-600">
+                  Let's make a positive impact today
+                </p>
               </div>
             </div>
-            <button
-              onClick={handleLogout}
-              className="text-sm bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition-colors"
-            >
-              Logout
-            </button>
+
+            {/* Quick Actions */}
+            <div className="flex items-center space-x-4">
+              <a 
+                href="/log"
+                className="flex items-center space-x-2 px-6 py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span>Log Activity</span>
+              </a>
+              <a 
+                href="/analytics"
+                className="flex items-center space-x-2 px-6 py-3 bg-white text-green-600 font-medium rounded-xl hover:bg-green-50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg border-2 border-green-200"
+              >
+                <span>📊</span>
+                <span>Analytics</span>
+              </a>
+              <a 
+                href="/leaderboard"
+                className="flex items-center space-x-2 px-6 py-3 bg-white text-green-600 font-medium rounded-xl hover:bg-green-50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg border-2 border-green-200"
+              >
+                <span>🏆</span>
+                <span>Leaderboard</span>
+              </a>
+              <button
+                onClick={handleLogout}
+                className="flex items-center space-x-2 px-6 py-3 bg-red-600 text-white font-medium rounded-xl hover:bg-red-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span>Logout</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Main Container */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
-
-        {/* Points Card */}
-        <div className="bg-gradient-to-r from-green-100 via-green-50 to-green-100 rounded-xl shadow-md p-6 mb-8 flex items-center justify-between hover:shadow-lg transition-shadow">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-800 mb-1">Total Points</h2>
-              <p className="text-3xl font-bold text-green-600 animate-pulse">{totalPoints}</p>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Total Points Card */}
+          <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300 hover:shadow-xl">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-green-100 text-lg mb-1">Total Points</p>
+                <p className="text-4xl font-bold">{totalPoints}</p>
+              </div>
+              <div className="text-4xl">🌟</div>
             </div>
-            <div className="w-16 h-16 bg-green-200 rounded-full flex items-center justify-center text-3xl">
-              🏆
+          </div>
+          
+          {/* Streak Card */}
+          <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300 hover:shadow-xl">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-orange-100 text-lg mb-1">Current Streak</p>
+                <p className="text-4xl font-bold">{currentStreak} days</p>
+              </div>
+              <div className="text-4xl">🔥</div>
+            </div>
+          </div>
+          
+          {/* Badges Card */}
+          <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300 hover:shadow-xl">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-purple-100 text-lg mb-1">Badges Earned</p>
+                <p className="text-4xl font-bold">{earnedBadgesCount}</p>
+              </div>
+              <div className="text-4xl">🎖️</div>
             </div>
           </div>
         </div>
 
-        {/* Main Content Grid */}
+        {/* Activities and Badges Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Activities */}
-          <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">Recent Activities</h2>
+          <div className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center space-x-2">
+              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              <span>Recent Activities</span>
+            </h2>
             {activity_logs.length > 0 ? (
               <div className="space-y-4">
                 {activity_logs.slice(0, 5).map((activity) => (
@@ -192,83 +243,60 @@ export default function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-gray-500 text-center py-8 flex flex-col items-center space-y-2">
-                <span className="text-4xl">🌱</span>
-                <p>No activities logged yet.</p>
-                <p className="text-sm mt-2">Start logging your eco-friendly habits!</p>
+              <div className="text-center py-12 bg-gray-50 rounded-xl">
+                <span className="text-6xl mb-4 block">🌱</span>
+                <p className="text-xl font-medium text-gray-800 mb-2">No activities yet</p>
+                <p className="text-gray-600">Start logging your eco-friendly habits!</p>
               </div>
             )}
           </div>
 
           {/* Badges */}
-          <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Your Badges</h2>
+          <div className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800 flex items-center space-x-2">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                </svg>
+                <span>Recent Badges</span>
+              </h2>
+              <Link 
+                href="/badges"
+                className="text-green-600 hover:text-green-700 font-medium flex items-center space-x-1 group"
+              >
+                <span>View All</span>
+                <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
             {badges.length > 0 ? (
-              <>
-                <div className="flex space-x-4 overflow-x-auto pb-2">
-                  {badges.map((badge) => (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {badges.slice(0, 6).map((badge) => (
+                  <Link href="/badges" key={badge.id}>
                     <BadgeCard
-                      key={badge.id}
-                      badgeName={badge.name}
-                      imageUrl={badge.icon || '/vercel.svg'}
-                      earned={true}
+                      name={badge.name}
+                      description={badge.description}
+                      imageUrl={badge.imageUrl}
                     />
-                  ))}
-                </div>
-                <div className="mt-4 text-sm text-gray-500">
-                  You've earned {earnedBadgesCount} out of {badges.length} badges
-                </div>
-              </>
+                  </Link>
+                ))}
+              </div>
             ) : (
-              <div className="text-gray-500 text-center py-8 flex flex-col items-center space-y-2">
-                <span className="text-4xl">🎖️</span>
-                <p>No badges available yet.</p>
-                <p className="text-sm mt-2">Keep logging activities to earn badges!</p>
+              <div className="text-center py-12 bg-gray-50 rounded-xl">
+                <span className="text-6xl mb-4 block">🎖️</span>
+                <p className="text-xl font-medium text-gray-800 mb-2">No badges yet</p>
+                <p className="text-gray-600">Complete activities to earn badges!</p>
+                <Link 
+                  href="/badges"
+                  className="inline-block mt-4 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  View Available Badges
+                </Link>
               </div>
             )}
           </div>
         </div>
-
-        {/* Action Buttons */}
-        <div className="mt-8 text-center space-x-4">
-          <a 
-            href="/log"
-            className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors duration-200 shadow-md hover:shadow-lg"
-          >
-            Log New Activity
-          </a>
-          <a 
-            href="/analytics"
-            className="inline-flex items-center px-6 py-3 bg-white text-green-600 font-medium rounded-lg hover:bg-green-50 transition-colors duration-200 shadow-md hover:shadow-lg border border-green-200"
-          >
-            View Analytics 📊
-          </a>
-          <a 
-            href="/leaderboard"
-            className="inline-flex items-center px-6 py-3 bg-white text-green-600 font-medium rounded-lg hover:bg-green-50 transition-colors duration-200 shadow-md hover:shadow-lg border border-green-200"
-          >
-            View Leaderboard 🏆
-          </a>
-          <a 
-            href="/learn"
-            className="inline-flex items-center px-6 py-3 bg-white text-green-600 font-medium rounded-lg hover:bg-green-50 transition-colors duration-200 shadow-md hover:shadow-lg border border-green-200"
-          >
-            Eco Learning Hub 📚
-          </a>
-          <a 
-            href="/footprint"
-            className="inline-flex items-center px-6 py-3 bg-white text-green-600 font-medium rounded-lg hover:bg-green-50 transition-colors duration-200 shadow-md hover:shadow-lg border border-green-200"
-          >
-            Calculate Footprint 🌍
-          </a>
-          <a 
-            href="/ecoquiz"
-            className="inline-flex items-center px-6 py-3 bg-white text-green-600 font-medium rounded-lg hover:bg-green-50 transition-colors duration-200 shadow-md hover:shadow-lg border border-green-200"
-          >
-            Take Eco Quiz 🤖
-          </a>
-        </div>
-
       </div>
     </div>
   );
