@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Alert from '../../components/Alert';
+import useSession from '../../hooks/useSession';
 
 interface Habit {
   id: string;
@@ -12,12 +14,14 @@ interface Habit {
 
 export default function LogPage() {
   const router = useRouter();
+  const { user: sessionUser } = useSession();
   const [habits, setHabits] = useState<Habit[]>([]);
   const [selectedHabitId, setSelectedHabitId] = useState('');
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingHabits, setIsLoadingHabits] = useState(true);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   // Fetch habits on component mount
   useEffect(() => {
@@ -47,14 +51,12 @@ export default function LogPage() {
     e.preventDefault();
     
     if (!selectedHabitId) {
-      alert('Please select a habit');
+      setError('Please select a habit');
       return;
     }
 
-    // Get user ID from localStorage
-    const userId = localStorage.getItem('userId');
-    if (!userId) {
-      alert('Please log in to continue');
+    if (!sessionUser) {
+      setError('You are not logged in');
       router.push('/login');
       return;
     }
@@ -69,8 +71,8 @@ export default function LogPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user_id: userId,
-          habit_id: selectedHabitId,
+          user_id: sessionUser.id,
+          habit_id: Number(selectedHabitId),
           notes: notes.trim(),
         }),
       });
@@ -78,19 +80,16 @@ export default function LogPage() {
       if (response.ok) {
         const result = await response.json();
         
-        // Show success message with points earned
-        if (result.pointsEarned > 0) {
-          alert(`Activity logged! You earned ${result.pointsEarned} points.`);
-        }
-        
-        // Show new badges if any
+        // Build success message
+        let message = `Activity logged! You earned ${result.pointsEarned} points.`;
         if (result.newBadges && result.newBadges.length > 0) {
           const badgeNames = result.newBadges.map((badge: { name: any; }) => badge.name).join(', ');
-          alert(`🎉 Congratulations! You earned new badge(s): ${badgeNames}`);
+          message += ` 🎉 New badge(s): ${badgeNames}`;
         }
-        
-        // Redirect to dashboard on successful submission
-        router.push('/dashboard');
+        setSuccess(message);
+
+        // Redirect after brief delay to show success message
+        setTimeout(() => router.push('/dashboard'), 1500);
       } else {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to log activity');
@@ -116,21 +115,9 @@ export default function LogPage() {
           </p>
         </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm text-red-800">{error}</p>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Alerts */}
+        {error && <Alert type="error" message={error} />}
+        {success && <Alert type="success" message={success} />}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
@@ -196,7 +183,7 @@ export default function LogPage() {
               <button
                 type="submit"
                 disabled={isSubmitting || isLoadingHabits || habits.length === 0}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-transform duration-200 hover:shadow-lg active:scale-95"
               >
                 {isSubmitting ? (
                   <div className="flex items-center">

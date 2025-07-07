@@ -62,11 +62,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { user_id, habit_id, notes } = req.body;
+    // Coerce IDs to numbers to match Prisma Int fields
+    const user_id = Number(req.body.user_id);
+    const habit_id = Number(req.body.habit_id);
+    const { notes } = req.body;
 
-    // Validate required fields
-    if (!user_id || !habit_id) {
-      return res.status(400).json({ error: 'User ID and Habit ID are required' });
+    if (Number.isNaN(user_id) || Number.isNaN(habit_id)) {
+      return res.status(400).json({ error: 'Invalid user_id or habit_id' });
     }
 
     // Check if habit exists
@@ -87,13 +89,47 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'User not found' });
     }
 
+    /* ---------------- Streak Calculation ---------------- */
+    const today = new Date();
+    const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    let streakUpdateData: Record<string, any> = {};
+
+    if (userExists?.last_logged_date) {
+      const lastDate = new Date(userExists.last_logged_date);
+      const lastDateOnly = new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate());
+      const diffInDays = Math.floor((todayDateOnly.getTime() - lastDateOnly.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (diffInDays === 1) {
+        // Consecutive day – increment streak
+        streakUpdateData = {
+          current_streak: { increment: 1 },
+          last_logged_date: todayDateOnly,
+        };
+      } else if (diffInDays >= 2) {
+        // Missed a day – reset streak
+        streakUpdateData = {
+          current_streak: { set: 1 },
+          last_logged_date: todayDateOnly,
+        };
+      }
+      // diffInDays === 0 -> already logged today, no update
+    } else {
+      // First ever log
+      streakUpdateData = {
+        current_streak: { set: 1 },
+        last_logged_date: todayDateOnly,
+      };
+    }
+
     // Use transaction to ensure data consistency
-    const result = await prisma.$transaction(async (tx: { activityLog: { create: (arg0: { data: { user_id: any; habit_id: any; notes: any; }; }) => any; }; user: { update: (arg0: { where: { id: any; }; data: { total_points: { increment: any; }; }; }) => any; }; badge: { findMany: (arg0: { where: { points_threshold: { lte: any; }; user_badges: { none: { user_id: any; }; }; }; }) => any; }; userBadge: { create: (arg0: { data: { user_id: any; badge_id: any; }; }) => any; }; }) => {
+    const result = await prisma.$transaction(async (tx) => {
       // 1. Create ActivityLog
       const log = await tx.activityLog.create({
         data: {
           user_id,
           habit_id,
+          points: habit.points_value || 0,
           notes: notes || null,
         },
       });
@@ -104,7 +140,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         data: { 
           total_points: { 
             increment: habit.points_value || 0 
-          } 
+          },
+          ...streakUpdateData,
         },
       });
 
@@ -138,6 +175,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         log,
         pointsEarned: habit.points_value || 0,
         totalPoints: updatedUser.total_points,
+        currentStreak: updatedUser.current_streak,
         newBadges,
       };
     });

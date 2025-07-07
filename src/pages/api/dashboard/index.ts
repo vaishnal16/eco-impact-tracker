@@ -53,8 +53,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    // Calculate total points from activity logs
-    const totalPoints = user.activity_logs.reduce((sum: any, log: { points: any; }) => sum + (log.points || 0), 0);
+    // Extract commonly used fields
+    const totalPoints = user.total_points;
+    const currentStreak = user.current_streak;
 
     // Transform data to match expected format
     const activity_logs = user.activity_logs.map((log: { id: any; habit: { name: any; }; logged_at: any; points: any; }) => ({
@@ -78,6 +79,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(200).json({
       name: user.name,
       totalPoints: totalPoints,
+      currentStreak: currentStreak,
       activity_logs: activity_logs,
       badges: badges
     });

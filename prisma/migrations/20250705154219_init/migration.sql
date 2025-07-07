@@ -5,6 +5,8 @@ CREATE TABLE `users` (
     `password_hash` VARCHAR(255) NOT NULL,
     `name` VARCHAR(100) NOT NULL,
     `total_points` INTEGER NOT NULL DEFAULT 0,
+    `last_logged_date` DATETIME(0) NULL,
+    `current_streak` INTEGER NOT NULL DEFAULT 0,
     `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `updated_at` DATETIME(0) NOT NULL,
 
@@ -30,6 +32,7 @@ CREATE TABLE `activity_logs` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `user_id` INTEGER NOT NULL,
     `habit_id` INTEGER NOT NULL,
+    `points` INTEGER NOT NULL DEFAULT 0,
     `logged_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `notes` TEXT NULL,
 
